@@ -34,6 +34,17 @@ pipeline {
                 """
             }
         }
+        stage('Create Dataflow Template') {
+            steps {
+                sh """
+                python main.py --runner DataflowRunner \
+                    --project ${PROJECT_ID} \
+                    --region ${REGION} \
+                    --template_location ${TEMPLATE_PATH} \
+                    --temp_location gs://${GCS_BUCKET}/temp
+                """
+            }
+        }
         stage('Run Dataflow Job') {
             steps {
                 sh """
