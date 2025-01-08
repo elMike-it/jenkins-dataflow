@@ -29,13 +29,15 @@ pipeline {
         }
         stage('Setup Python Environment') {
             steps {
-                sh """
-                python3 --version
-                python3 -m venv venv
-                source venv/bin/activate
-                pip install --upgrade pip setuptools
-                pip install apache-beam[gcp]
-                """
+                withPythonEnv('python') {
+                    sh """
+                    python3 --version
+                    python3 -m venv venv
+                    source venv/bin/activate
+                    pip install --upgrade pip setuptools
+                    pip install apache-beam[gcp]
+                    """
+                }
             }
         }
         stage('Upload Python Script to GCS') {
