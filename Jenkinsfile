@@ -29,11 +29,9 @@ pipeline {
         }
         stage('Setup Python Environment') {
             steps {
-                withPythonEnv('python') {
+                withPythonEnv('python3') {
                     sh """
-                    py --version
-                    python3 -m venv venv
-                    source venv/bin/activate
+                    python --version
                     pip install --upgrade pip setuptools
                     pip install apache-beam[gcp]
                     """
