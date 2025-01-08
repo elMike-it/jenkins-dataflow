@@ -31,7 +31,7 @@ pipeline {
             steps {
                 withPythonEnv('python') {
                     sh """
-                    python3 --version
+                    py --version
                     python3 -m venv venv
                     source venv/bin/activate
                     pip install --upgrade pip setuptools
