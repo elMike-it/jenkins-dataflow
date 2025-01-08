@@ -45,6 +45,7 @@ pipeline {
                     image "${IMAGE_NAME}" // Imagen personalziada
                     //args '-u root' // Permite ejecutar comandos como usuario root
                     //args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT
+                    reuseNode true
                 }
             }
             stages {
