@@ -30,8 +30,6 @@ pipeline {
         stage('Setup Python Environment') {
             steps {
                 sh """
-                apt-get update
-                apt-get install python3.6
                 python3 --version
                 python3 -m venv venv
                 source venv/bin/activate
