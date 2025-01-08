@@ -27,15 +27,12 @@ pipeline {
                 }
             }
         }
-        stage('Setup Python Environment') {
+        stage('Install Python3-venv') {
             steps {
-                withPythonEnv('python3') {
-                    sh """
-                    python --version
-                    pip install --upgrade pip setuptools
-                    pip install apache-beam[gcp]
-                    """
-                }
+                sh """
+                sudo apt-get update
+                sudo apt-get install -y python3-venv
+                """
             }
         }
         stage('Upload Python Script to GCS') {
