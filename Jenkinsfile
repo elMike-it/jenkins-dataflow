@@ -8,7 +8,7 @@ pipeline {
         JOB_NAME = 'jenkins-dataflow-upper' // Nombre del job en Dataflow
         GCP_KEYFILE = credentials('gcp-sa-jenkins-dataflow') // Credencial configurada en Jenkins
         TEMPLATE_PATH = "gs://${GCS_BUCKET}/templates/template.json"
-        IMAGE_NAME = "gcr.io/${PROJECT_ID}/${SERVICE_NAME}"
+        DOCKER_IMAGE = "gcr.io/${PROJECT_ID}/${SERVICE_NAME}"
     }
     stages {
         stage('Checkout Code') {
