@@ -39,10 +39,7 @@ pipeline {
             steps {
                 script {
                     sh """
-                    echo 'FROM ubuntu:22.04' > Dockerfile
-                    echo 'RUN apt update && apt install -y python3.11 python3.11-venv python3-pip' >> Dockerfile
                     docker build -t ${DOCKER_IMAGE} .
-                    docker push ${DOCKER_IMAGE}
                     """
                 }
             }
