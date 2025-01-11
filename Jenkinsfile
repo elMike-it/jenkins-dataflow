@@ -53,6 +53,7 @@ pipeline {
                     image "${DOCKER_IMAGE}"
                 }
             }
+        stages {
             stage('Setup Python Environment') {
                 steps {
                     sh """
