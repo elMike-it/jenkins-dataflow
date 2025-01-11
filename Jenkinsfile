@@ -23,10 +23,20 @@ pipeline {
                         gcloud auth activate-service-account --key-file=${GCP_KEYFILE_PATH}
                         gcloud config set project ${PROJECT_ID}
                         gcloud auth list
-                        python3 --version
                         """
                     }
                 }
+            }
+        }
+        stage('Setup Python Environment') {
+            steps {
+                sh """
+                python3 --version
+                python3 -m venv venv
+                source venv/bin/activate
+                pip install --upgrade pip setuptools
+                pip install -r requirements.txt
+                """
             }
         }
         stage('Upload Python Script to GCS') {
