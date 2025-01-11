@@ -7,6 +7,7 @@ pipeline {
         GCS_BUCKET = 'jenkins-dataflow' // Nombre del bucket de GCS
         JOB_NAME = 'jenkins-dataflow-upper' // Nombre del job en Dataflow
         GCP_KEYFILE = credentials('gcp-sa-jenkins-dataflow') // Credencial configurada en Jenkins
+        TEMPLATE_PATH = "gs://${GCS_BUCKET}/templates/template.json"
     }
     stages {
         stage('Checkout Code') {
