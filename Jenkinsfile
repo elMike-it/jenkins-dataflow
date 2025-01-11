@@ -53,46 +53,47 @@ pipeline {
                     image "${DOCKER_IMAGE}"
                 }
             }
-        stages {
-            stage('Setup Python Environment') {
-                steps {
-                    sh """
-                    python3 --version
-                    apt install python3.11-venv
-                    python3 -m venv venv
-                    source venv/bin/activate
-                    pip install --upgrade pip setuptools
-                    pip install -r requirements.txt
-                    """
+            stages {
+                stage('Setup Python Environment') {
+                    steps {
+                        sh """
+                        python3 --version
+                        apt install python3.11-venv
+                        python3 -m venv venv
+                        source venv/bin/activate
+                        pip install --upgrade pip setuptools
+                        pip install -r requirements.txt
+                        """
+                    }
                 }
-            }
-            stage('Upload Python Script to GCS') {
-                steps {
-                    sh """
-                    gsutil cp main.py gs://${GCS_BUCKET}/scripts/
-                    """
+                stage('Upload Python Script to GCS') {
+                    steps {
+                        sh """
+                        gsutil cp main.py gs://${GCS_BUCKET}/scripts/
+                        """
+                    }
                 }
-            }
-            stage('Create Dataflow Template') {
-                steps {
-                    sh """
-                    python3 main.py --runner DataflowRunner \
-                        --project ${PROJECT_ID} \
+                stage('Create Dataflow Template') {
+                    steps {
+                        sh """
+                        python3 main.py --runner DataflowRunner \
+                            --project ${PROJECT_ID} \
+                            --region ${REGION} \
+                            --template_location ${TEMPLATE_PATH} \
+                            --temp_location gs://${GCS_BUCKET}/temp
+                        """
+                    }
+                }
+                stage('Run Dataflow Job') {
+                    steps {
+                        sh """
+                        gcloud dataflow jobs run ${JOB_NAME} \
+                        --gcs-location gs://${GCS_BUCKET}/scripts/main.py \
                         --region ${REGION} \
-                        --template_location ${TEMPLATE_PATH} \
-                        --temp_location gs://${GCS_BUCKET}/temp
-                    """
-                }
-            }
-            stage('Run Dataflow Job') {
-                steps {
-                    sh """
-                    gcloud dataflow jobs run ${JOB_NAME} \
-                    --gcs-location gs://${GCS_BUCKET}/scripts/main.py \
-                    --region ${REGION} \
-                    --staging-location gs://${GCS_BUCKET}/staging/ \
-                    --parameters input=gs://${GCS_BUCKET}/input/input.txt,output=gs://${GCS_BUCKET}/output/output.txt
-                    """
+                        --staging-location gs://${GCS_BUCKET}/staging/ \
+                        --parameters input=gs://${GCS_BUCKET}/input/input.txt,output=gs://${GCS_BUCKET}/output/output.txt
+                        """
+                    }
                 }
             }
         }
