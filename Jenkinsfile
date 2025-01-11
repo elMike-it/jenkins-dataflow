@@ -23,6 +23,7 @@ pipeline {
                         gcloud auth activate-service-account --key-file=${GCP_KEYFILE_PATH}
                         gcloud config set project ${PROJECT_ID}
                         gcloud auth list
+                        python3 --version
                         """
                     }
                 }
@@ -38,7 +39,7 @@ pipeline {
         stage('Create Dataflow Template') {
             steps {
                 sh """
-                python main.py --runner DataflowRunner \
+                python3 main.py --runner DataflowRunner \
                     --project ${PROJECT_ID} \
                     --region ${REGION} \
                     --template_location ${TEMPLATE_PATH} \
