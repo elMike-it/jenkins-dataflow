@@ -8,17 +8,17 @@ class TransformToUpperCase(beam.DoFn):
 def run():
     pipeline_options = PipelineOptions(
         runner='DataflowRunner',
-        project='your-gcp-project-id',  # Reemplaza con tu ID de proyecto
+        project='test-interno-trendit',  # Reemplaza con tu ID de proyecto
         region='us-central1',          # Reemplaza con tu región preferida
-        temp_location='gs://your-gcs-bucket/temp',  # Reemplaza con tu bucket GCS
+        temp_location='gs://jenkins-dataflow/temp',  # Reemplaza con tu bucket GCS
     )
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
         (
             pipeline
-            | 'Read Input File' >> beam.io.ReadFromText('gs://your-gcs-bucket/input/input.txt')
+            | 'Read Input File' >> beam.io.ReadFromText('gs://jenkins-dataflow/input/input.txt')
             | 'Transform to Uppercase' >> beam.ParDo(TransformToUpperCase())
-            | 'Write Output File' >> beam.io.WriteToText('gs://your-gcs-bucket/output/output')
+            | 'Write Output File' >> beam.io.WriteToText('gs://jenkins-dataflow/output/output')
         )
 
 if __name__ == '__main__':
