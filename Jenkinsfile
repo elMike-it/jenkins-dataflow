@@ -85,7 +85,7 @@ pipeline {
                 gcloud dataflow jobs run ${JOB_NAME} \
                 --gcs-location gs://${GCS_BUCKET}/scripts/main.py \
                 --region ${REGION} \
-                --staging-location gs://${GCS_BUCKET}/staging/ \
+                --gcs-location=${TEMPLATE_PATH} \
                 --parameters input=gs://${GCS_BUCKET}/input/input.txt,output=gs://${GCS_BUCKET}/output/output.txt
                 """
             }
