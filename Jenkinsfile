@@ -60,8 +60,14 @@ pipeline {
                             python3 --version
                             pip install --upgrade pip setuptools
                             pip install -r requirements.txt
-                            
-                            python3 --version
+                            """
+                        }
+                    }
+                }
+                stage('Create Dataflow Template') {
+                    steps {
+                        withEnv(["HOME=${env.WORKSPACE}"]) {
+                            sh """
                             python3 main.py --runner DataflowRunner \
                                 --project ${PROJECT_ID} \
                                 --region ${REGION} \
@@ -71,7 +77,6 @@ pipeline {
                         }
                     }
                 }
-
             }
         }
         stage('Run Dataflow Job') {
