@@ -64,19 +64,7 @@ pipeline {
                         }
                     }
                 }
-                stage('Create Dataflow Template') {
-                    steps {
-                        withEnv(["HOME=${env.WORKSPACE}"]) {
-                            sh """
-                            python3 main.py --runner DataflowRunner \
-                                --project ${PROJECT_ID} \
-                                --region ${REGION} \
-                                --template_location ${TEMPLATE_PATH} \
-                                --temp_location gs://${GCS_BUCKET}/temp
-                            """
-                        }
-                    }
-                }
+
             }
         }
         stage('Run Dataflow Job') {
@@ -85,7 +73,6 @@ pipeline {
                 gcloud dataflow jobs run ${JOB_NAME} \
                 --gcs-location gs://${GCS_BUCKET}/scripts/main.py \
                 --region ${REGION} \
-                --gcs-location=${TEMPLATE_PATH} \
                 --parameters input=gs://${GCS_BUCKET}/input/input.txt,output=gs://${GCS_BUCKET}/output/output.txt
                 """
             }
