@@ -29,6 +29,13 @@ pipeline {
                 }
             }
         }
+        stage('Upload Python Script to GCS') {
+            steps {
+                sh """
+                gsutil cp main.py gs://${GCS_BUCKET}/scripts/
+                """
+            }
+        }
         stage('Build Docker Image') {
             steps {
                 script {
@@ -45,28 +52,16 @@ pipeline {
                     args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT
                 }
             }
-            
             stages {
                 stage('Setup Python Environment') {
                     steps {
                         withEnv(["HOME=${env.WORKSPACE}"]) {
                             sh """
                             python3 --version
-
                             pip install --upgrade pip setuptools
                             pip install -r requirements.txt
                             """
                         }
-                    }
-                }
-                            //apt install python3.11-venv
-                            //python3 -m venv venv
-                            //source venv/bin/activate
-                stage('Upload Python Script to GCS') {
-                    steps {
-                        sh """
-                        gsutil cp main.py gs://${GCS_BUCKET}/scripts/
-                        """
                     }
                 }
                 stage('Create Dataflow Template') {
@@ -80,17 +75,17 @@ pipeline {
                         """
                     }
                 }
-                stage('Run Dataflow Job') {
-                    steps {
-                        sh """
-                        gcloud dataflow jobs run ${JOB_NAME} \
-                        --gcs-location gs://${GCS_BUCKET}/scripts/main.py \
-                        --region ${REGION} \
-                        --staging-location gs://${GCS_BUCKET}/staging/ \
-                        --parameters input=gs://${GCS_BUCKET}/input/input.txt,output=gs://${GCS_BUCKET}/output/output.txt
-                        """
-                    }
-                }
+            }
+        }
+        stage('Run Dataflow Job') {
+            steps {
+                sh """
+                gcloud dataflow jobs run ${JOB_NAME} \
+                --gcs-location gs://${GCS_BUCKET}/scripts/main.py \
+                --region ${REGION} \
+                --staging-location gs://${GCS_BUCKET}/staging/ \
+                --parameters input=gs://${GCS_BUCKET}/input/input.txt,output=gs://${GCS_BUCKET}/output/output.txt
+                """
             }
         }
     }
