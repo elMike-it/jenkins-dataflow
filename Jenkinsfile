@@ -69,6 +69,7 @@ pipeline {
                     steps {
                         withEnv(["HOME=${env.WORKSPACE}"]) {
                             sh """
+                            gcloud auth list
                             python3 main.py --runner DataflowRunner \
                                 --project ${PROJECT_ID} \
                                 --region ${REGION} \
