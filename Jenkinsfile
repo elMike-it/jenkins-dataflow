@@ -49,7 +49,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE}"
-                    args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT                
+                    args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT
                 }
             }
             stages {
@@ -60,23 +60,18 @@ pipeline {
                             python3 --version
                             pip install --upgrade pip setuptools
                             pip install -r requirements.txt
-                            """
-                        }
-                    }
-                }
-                stage('Create Dataflow Template') {
-                    steps {
-                        withEnv(["HOME=${env.WORKSPACE}"]) {
-                            sh """
+                            
+                            python3 --version
                             python3 main.py --runner DataflowRunner \
                                 --project ${PROJECT_ID} \
                                 --region ${REGION} \
-                                --template_location gs://jenkins-dataflow-temps/template \
-                                --temp_location gs://jenkins-dataflow-temps/temp
+                                --template_location ${TEMPLATE_PATH} \
+                                --temp_location gs://${GCS_BUCKET}/temp
                             """
                         }
                     }
                 }
+
             }
         }
         stage('Run Dataflow Job') {
@@ -85,7 +80,7 @@ pipeline {
                 gcloud dataflow jobs run ${JOB_NAME} \
                 --gcs-location gs://${GCS_BUCKET}/scripts/main.py \
                 --region ${REGION} \
-                --gcs-location=gs://jenkins-dataflow-temps/template \
+                --gcs-location=${TEMPLATE_PATH} \
                 --parameters input=gs://${GCS_BUCKET}/input/input.txt,output=gs://${GCS_BUCKET}/output/output.txt
                 """
             }
