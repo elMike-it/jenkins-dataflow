@@ -11,6 +11,7 @@ def run():
         project='test-interno-trendit',  # Reemplaza con tu ID de proyecto
         region='us-central1',          # Reemplaza con tu región preferida
         temp_location='gs://jenkins-dataflow/temp',  # Reemplaza con tu bucket GCS
+        job_name = 'my-custom-dataflow-job'  # Nombre explícito
     )
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
