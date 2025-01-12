@@ -1,5 +1,7 @@
 import apache_beam as beam
 from apache_beam.options.pipeline_options import PipelineOptions
+import os
+os.environ['USER'] = 'jenkins'
 
 class TransformToUpperCase(beam.DoFn):
     def process(self, element):
