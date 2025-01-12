@@ -49,7 +49,8 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE}"
-                    args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT                }
+                    args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT                
+                }
             }
             stages {
                 stage('Setup Python Environment') {
