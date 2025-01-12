@@ -50,6 +50,7 @@ pipeline {
                 docker {
                     image "${DOCKER_IMAGE}"
                     args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT
+                    args '-u 0:0' // Corre como root para evitar problemas de permisos
                 }
             }
             stages {
