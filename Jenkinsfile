@@ -49,7 +49,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE}"
-                    args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT
+                    args '--entrypoint="" -v /path/to/credentials:/root/.config/gcloud'// Esto elimina conflictos de ENTRYPOINT
                 }
             }
             stages {
@@ -83,10 +83,9 @@ pipeline {
             steps {
                 sh """
                 gcloud dataflow jobs run ${JOB_NAME} \
-                --gcs-location gs://${GCS_BUCKET}/scripts/main.py \
-                --region ${REGION} \
-                --gcs-location=${TEMPLATE_PATH} \
-                --parameters input=gs://${GCS_BUCKET}/input/input.txt,output=gs://${GCS_BUCKET}/output/output.txt
+                    --region ${REGION} \
+                    --gcs-location=${TEMPLATE_PATH} \
+                    --parameters input=gs://${GCS_BUCKET}/input/input.txt,output=gs://${GCS_BUCKET}/output/output.txt
                 """
             }
         }
