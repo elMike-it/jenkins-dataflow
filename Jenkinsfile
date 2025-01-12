@@ -49,7 +49,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE}"
-                    args '--entrypoint="" -v /path/to/credentials:/root/.config/gcloud'// Esto elimina conflictos de ENTRYPOINT
+                    args '--entrypoint="" -v /path/to/credentials:/root/.config/gcloud'// Esto elimina conflictos de ENTRYPOINT y hereda las credenciales al container
                 }
             }
             stages {
@@ -57,6 +57,7 @@ pipeline {
                     steps {
                         withEnv(["HOME=${env.WORKSPACE}"]) {
                             sh """
+                            gcloud auth list
                             python3 --version
                             pip install --upgrade pip setuptools
                             pip install -r requirements.txt
