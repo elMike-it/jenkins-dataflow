@@ -45,21 +45,23 @@ pipeline {
                     args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT
                 }
             }
+            
             stages {
                 stage('Setup Python Environment') {
                     steps {
                         withEnv(["HOME=${env.WORKSPACE}"]) {
                             sh """
                             python3 --version
-                            apt install python3.11-venv
-                            python3 -m venv venv
-                            source venv/bin/activate
+
                             pip install --upgrade pip setuptools
                             pip install -r requirements.txt
                             """
                         }
                     }
                 }
+                            //apt install python3.11-venv
+                            //python3 -m venv venv
+                            //source venv/bin/activate
                 stage('Upload Python Script to GCS') {
                     steps {
                         sh """
