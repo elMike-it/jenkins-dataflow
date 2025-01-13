@@ -49,12 +49,17 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE}"
-                    args "--entrypoint="" -v /path/to/credentials:/root/.config/gcloud/${GCP_KEYFILE_PATH}"// Esto elimina conflictos de ENTRYPOINT y hereda las credenciales al container
+                    args "--entrypoint='' -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-keyfile.json -v ${env.WORKSPACE}/gcp-keyfile.json:/tmp/gcp-keyfile.json"
                 }
             }
             stages {
                 stage('Setup Python Environment') {
                     steps {
+                        withCredentials([file(credentialsId: 'gcp-sa-jenkins-dataflow', variable: 'GCP_KEYFILE_PATH')]) {
+                            sh """
+                            cp ${GCP_KEYFILE_PATH} ${env.WORKSPACE}/gcp-keyfile.json
+                            """
+                        }            
                         withEnv(["HOME=${env.WORKSPACE}"]) {
                             sh """
                             gcloud auth list
@@ -69,7 +74,6 @@ pipeline {
                     steps {
                         withEnv(["HOME=${env.WORKSPACE}"]) {
                             sh """
-                            gcloud auth list
                             python3 main.py --runner DataflowRunner \
                                 --project ${PROJECT_ID} \
                                 --region ${REGION} \
