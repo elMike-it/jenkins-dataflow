@@ -57,11 +57,13 @@ pipeline {
                     steps {
                         withCredentials([file(credentialsId: 'gcp-sa-jenkins-dataflow', variable: 'GCP_KEYFILE_PATH')]) {
                             sh """
-                            cp ${GCP_KEYFILE_PATH} /tmp/gcp-keyfile.json
+                            chmod -R 777 ${env.WORKSPACE}
+                            cp ${GCP_KEYFILE_PATH} ${env.WORKSPACE}/gcp-keyfile.json
                             """
                         }            
-                        withEnv(["GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-keyfile.json"]) {
+                        withEnv(["HOME=${env.WORKSPACE}"]) {
                             sh """
+                            export GOOGLE_APPLICATION_CREDENTIALS=${env.WORKSPACE}/gcp-keyfile.json
                             gcloud auth list
                             python3 --version
                             pip install --upgrade pip setuptools
