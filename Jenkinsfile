@@ -64,27 +64,30 @@ pipeline {
                                 gcloud auth list
 
                                 python3 --version
-                                pip install --upgrade pip setuptools
-                                pip install -r requirements.txt
+                                python3 main.py --runner DataflowRunner \
+                                    --project ${PROJECT_ID} \
+                                    --region ${REGION} \
+                                    --template_location ${TEMPLATE_PATH} \
+                                    --temp_location gs://${GCS_BUCKET}/temp
                                 """
                             }
                         }           
                     }
                 }
-                stage('Create Dataflow Template') {
-                    steps {
-                        withEnv(["HOME=${env.WORKSPACE}"]) {
-                            sh """
-                            gcloud auth list
-                            python3 main.py --runner DataflowRunner \
-                                --project ${PROJECT_ID} \
-                                --region ${REGION} \
-                                --template_location ${TEMPLATE_PATH} \
-                                --temp_location gs://${GCS_BUCKET}/temp
-                            """
-                        }
-                    }
-                }
+                // stage('Create Dataflow Template') {
+                //     steps {
+                //         withEnv(["HOME=${env.WORKSPACE}"]) {
+                //             sh """
+                //             gcloud auth list
+                //             python3 main.py --runner DataflowRunner \
+                //                 --project ${PROJECT_ID} \
+                //                 --region ${REGION} \
+                //                 --template_location ${TEMPLATE_PATH} \
+                //                 --temp_location gs://${GCS_BUCKET}/temp
+                //             """
+                //         }
+                //     }
+                // }
             }
         }
         stage('Run Dataflow Job') {
