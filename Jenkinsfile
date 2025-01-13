@@ -62,6 +62,7 @@ pipeline {
                         }            
                         withEnv(["HOME=${env.WORKSPACE}"]) {
                             sh """
+                            export GOOGLE_APPLICATION_CREDENTIALS=${env.WORKSPACE}/gcp-keyfile.json
                             gcloud auth list
                             python3 --version
                             pip install --upgrade pip setuptools
