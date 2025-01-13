@@ -49,7 +49,7 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE}"
-                    args '--entrypoint="" -v /path/to/credentials:/root/.config/gcloud'// Esto elimina conflictos de ENTRYPOINT y hereda las credenciales al container
+                    args "--entrypoint="" -v /path/to/credentials:/root/.config/gcloud/${GCP_KEYFILE_PATH}"// Esto elimina conflictos de ENTRYPOINT y hereda las credenciales al container
                 }
             }
             stages {
