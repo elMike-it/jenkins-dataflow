@@ -49,27 +49,26 @@ pipeline {
             agent {
                 docker {
                     image "${DOCKER_IMAGE}"
-                    args "--entrypoint='' -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/gcp-keyfile.json -v ${env.WORKSPACE}/gcp-keyfile.json:/tmp/gcp-keyfile.json"
+                    args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT
                 }
             }
             stages {
                 stage('Setup Python Environment') {
                     steps {
                         withCredentials([file(credentialsId: 'gcp-sa-jenkins-dataflow', variable: 'GCP_KEYFILE_PATH')]) {
-                            sh """
-                            gcloud auth activate-service-account --key-file=${GCP_KEYFILE_PATH}
-                            gcloud config set project ${PROJECT_ID}
-                            gcloud auth list
-                            """
-                        }            
-                        withEnv(["HOME=${env.WORKSPACE}"]) {
-                            sh """
-                            gcloud auth list
-                            python3 --version
-                            pip install --upgrade pip setuptools
-                            pip install -r requirements.txt
-                            """
-                        }
+                            withEnv(["CLOUDSDK_CONFIG=${env.WORKSPACE}/.gcloud", "HOME=${env.WORKSPACE}"]) {
+                                sh """
+                                mkdir -p ${env.WORKSPACE}/.gcloud
+                                gcloud auth activate-service-account --key-file=${GCP_KEYFILE_PATH}
+                                gcloud config set project ${PROJECT_ID}
+                                gcloud auth list
+
+                                python3 --version
+                                pip install --upgrade pip setuptools
+                                pip install -r requirements.txt
+                                """
+                            }
+                        }           
                     }
                 }
                 stage('Create Dataflow Template') {
