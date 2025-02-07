@@ -13,6 +13,8 @@ def run():
         project='test-interno-trendit',  # Reemplaza con tu ID de proyecto
         region='us-central1',          # Reemplaza con tu región preferida
         temp_location='gs://jenkins-dataflow/temp',  # Reemplaza con tu bucket GCS
+        template_location='gs://jenkins-dataflow/templates/template.json',  # Ubicación para el template
+
     )
 
     with beam.Pipeline(options=pipeline_options) as pipeline:
