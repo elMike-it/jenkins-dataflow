@@ -45,49 +45,32 @@ pipeline {
                 }
             }
         }
-        stage('Run Pipeline') {
-            agent {
-                docker {
-                    image "${DOCKER_IMAGE}"
-                    args '--entrypoint=""'// Esto elimina conflictos de ENTRYPOINT
-                }
-            }
-            stages {
-                stage('Setup Python Environment') {
-                    steps {
-                        withCredentials([file(credentialsId: 'gcp-sa-jenkins-dataflow', variable: 'GCP_KEYFILE_PATH')]) {
-                            withEnv(["CLOUDSDK_CONFIG=${env.WORKSPACE}/.gcloud", "HOME=${env.WORKSPACE}"]) {
-                                sh """
-                                mkdir -p ${env.WORKSPACE}/.gcloud
-                                gcloud auth activate-service-account --key-file=${GCP_KEYFILE_PATH}
-                                gcloud config set project ${PROJECT_ID}
-                                gcloud auth list
-
-                                python3 --version
-                                python3 main.py --runner DataflowRunner \
-                                    --project ${PROJECT_ID} \
-                                    --region ${REGION} \
-                                    
-                                    --temp_location gs://${GCS_BUCKET}/temp
-                                """
-                            }
-                        }           
+        stage('Generate Dataflow Template') {
+            steps {
+                agent {
+                    docker {
+                        image "${DOCKER_IMAGE}"
+                        args '--entrypoint=""' // Esto elimina conflictos de ENTRYPOINT
                     }
                 }
-                // stage('Create Dataflow Template') {
-                //     steps {
-                //         withEnv(["HOME=${env.WORKSPACE}"]) {
-                //             sh """
-                //             gcloud auth list
-                //             python3 main.py --runner DataflowRunner \
-                //                 --project ${PROJECT_ID} \
-                //                 --region ${REGION} \
-                //                 --template_location ${TEMPLATE_PATH} \
-                //                 --temp_location gs://${GCS_BUCKET}/temp
-                //             """
-                //         }
-                //     }
-                // }
+                script {
+                    withCredentials([file(credentialsId: 'gcp-sa-jenkins-dataflow', variable: 'GCP_KEYFILE_PATH')]) {
+                        withEnv(["CLOUDSDK_CONFIG=${env.WORKSPACE}/.gcloud", "HOME=${env.WORKSPACE}"]) {
+                            sh """
+                            mkdir -p ${env.WORKSPACE}/.gcloud
+                            gcloud auth activate-service-account --key-file=${GCP_KEYFILE_PATH}
+                            gcloud config set project ${PROJECT_ID}
+                            gcloud auth list
+                            
+                            python3 main.py --runner DataflowRunner \
+                                --project ${PROJECT_ID} \
+                                --region ${REGION} \
+                                --template_location ${TEMPLATE_PATH} \
+                                --temp_location gs://${GCS_BUCKET}/temp
+                            """
+                        }
+                    }
+                }
             }
         }
         stage('Run Dataflow Job') {
